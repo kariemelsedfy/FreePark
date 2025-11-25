@@ -3,42 +3,55 @@ import MapKit
 
 struct LotMapScreen: View {
     @StateObject private var vm = LotMapViewModel()
-    @State private var region: MKCoordinateRegion
+
+    @State private var cameraPosition: MapCameraPosition
 
     init() {
-        // compute center from LotData.lot.corners
-        let c = LotMapScreen.computeCenter(from: LotData.lot.corners)
-
-        _region = State(initialValue: MKCoordinateRegion(
-            center: c,
+        let lot = LotData.lot
+        let center = LotMapScreen.center(from: lot.corners)
+        let region = MKCoordinateRegion(
+            center: center,
             span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
-        ))
+        )
+        _cameraPosition = State(initialValue: .region(region))
     }
 
     var body: some View {
-        ZStack(alignment: .top) {
+        let lot = vm.lot
+        let coords = lot.corners.map { $0.clLocation }
+        let center = LotMapScreen.center(from: lot.corners)
 
-            Map(coordinateRegion: $region)
-                .ignoresSafeArea()
+        Map(position: $cameraPosition) {
 
-            VStack(spacing: 6) {
-                Text(vm.lot.name)
-                    .font(.headline)
+            // 1) Rectangle overlay of the lot
+            MapPolygon(coordinates: coords)
+                .foregroundStyle(.green.opacity(0.18))
+                .stroke(.green, lineWidth: 2)
 
-                Text("\(vm.freeCount) free / \(vm.totalCount) total")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+            // 2) Label over the lot showing "free / total"
+            Annotation("", coordinate: center) {
+                VStack(spacing: 4) {
+                    Text(lot.name)
+                        .font(.caption2)
+                        .foregroundStyle(.white.opacity(0.8))
+
+                    Text("\(vm.freeCount) / \(vm.totalCount)")
+                        .font(.headline)
+                        .bold()
+                        .foregroundStyle(.white)
+                }
+                .padding(8)
+                .background(.green.opacity(0.9))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .shadow(radius: 4)
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
-            .padding(.top, 12)
         }
+        .ignoresSafeArea()
     }
 
-    // MARK: - local helper (no Lot.center needed)
-    private static func computeCenter(from corners: [Coordinate]) -> CLLocationCoordinate2D {
+    // MARK: - Helpers
+
+    static func center(from corners: [Coordinate]) -> CLLocationCoordinate2D {
         let lats = corners.map { $0.latitude }
         let lons = corners.map { $0.longitude }
 

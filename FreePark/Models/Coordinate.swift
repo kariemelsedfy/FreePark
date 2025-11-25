@@ -26,3 +26,5 @@ struct Coordinate: Codable, Hashable {
         self.longitude = coord.longitude
     }
 }
+
+

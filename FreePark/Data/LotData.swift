@@ -8,16 +8,14 @@
 import Foundation
 
 struct LotData {
-
-    // MARK: - Single Lot (replace corners with your real 4 coordinates)
     static let lot = Lot(
         id: "LotA",
-        name: "Main Campus Lot A",
+        name: "Campus Lot",
         corners: [
-            Coordinate(latitude: 43.90650, longitude: -69.96350), // top-left
-            Coordinate(latitude: 43.90650, longitude: -69.96310), // top-right
-            Coordinate(latitude: 43.90610, longitude: -69.96310), // bottom-right
-            Coordinate(latitude: 43.90610, longitude: -69.96350)  // bottom-left
+            Coordinate(latitude: 43.905358, longitude: -69.964369), // top-left
+            Coordinate(latitude: 43.905186, longitude: -69.964309), // top-right
+            Coordinate(latitude: 43.905104, longitude: -69.964726), // bottom-right
+            Coordinate(latitude: 43.905285, longitude: -69.964780)  // bottom-left
         ],
         totalSlots: 20,
         freeSlots: 7
